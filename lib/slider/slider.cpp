@@ -1,5 +1,7 @@
 #include "slider.h"
 
+
+
 void testfillrect(Adafruit_PCD8544 disp) {
   uint8_t color = 1;
   for (int16_t i=0; i<disp.height()/2; i+=3) {
@@ -93,7 +95,7 @@ int8_t set_menuItemPrint(Adafruit_PCD8544 disp, String array[], String header, i
   return pos;
 }
 
-void set_subMenuValuePrint(Adafruit_PCD8544 disp, String array[], int8_t pos, uint8_t value){
+void set_slideMenuValuePrint(Adafruit_PCD8544 disp, String array[], int8_t pos){
 
   disp.clearDisplay();
 
@@ -112,13 +114,66 @@ void set_subMenuValuePrint(Adafruit_PCD8544 disp, String array[], int8_t pos, ui
 
   //disp.fillRect(0,14,83,18,BLACK);
   disp.setTextSize(2);
-  disp.setCursor(5,20);
+  disp.setCursor(3,18);
   disp.setTextColor(BLACK);
-  disp.println("<    >");
-  disp.setCursor(30,20);
-  disp.print(value);
-  disp.println("%");
+  //disp.println("<    >");
+  //disp.setCursor(30,20);
+  //disp.println("%");
 
 
   disp.display();
+}
+
+void set_subMenuValuePrint(Adafruit_PCD8544 disp, String array[], int8_t pos, String value){
+
+  disp.clearDisplay();
+
+  //header
+  disp.fillRect(0,0,70,8,BLACK);
+  disp.setTextSize(1);
+  disp.setCursor(16,0);
+  disp.setTextColor(WHITE, BLACK);
+  disp.println(array[pos]);
+  //disp.drawFastHLine(0,8,83,BLACK);
+
+  //battery sign
+  disp.fillRect(72,1,6,5,BLACK);
+  disp.drawRect(77,1,6,5,BLACK);
+  disp.drawFastVLine(83,2,3,BLACK);
+
+  //disp.fillRect(0,14,83,18,BLACK);
+  disp.setTextSize(2);
+  disp.setCursor(3,18);
+  disp.setTextColor(BLACK);
+  //disp.println("<    >");
+  //disp.setCursor(30,20);
+  disp.print(value);
+  //disp.println("%");
+
+
+  disp.display();
+}
+
+//Go home
+bool go_home(void){
+  bool ret = false;
+
+  while(digitalRead(BUTTON_HOME)){
+    go_right(SLIDER_SPEED_1);
+  }
+
+  //go_left(SLIDER_SPEED_1);
+
+  ret = true;
+  return ret;
+}
+
+void go_right(uint8_t speed){
+  Serial.println(">>");
+  delay(1000);
+}
+
+void go_left(uint8_t speed){
+  Serial.println("<<");
+  delay(1000);
 }
