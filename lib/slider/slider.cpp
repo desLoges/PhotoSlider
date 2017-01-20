@@ -1,6 +1,6 @@
 #include "slider.h"
 
-
+extern s_values slider_values;
 
 void testfillrect(Adafruit_PCD8544 disp) {
   uint8_t color = 1;
@@ -176,4 +176,38 @@ void go_right(uint8_t speed){
 void go_left(uint8_t speed){
   Serial.println("<<");
   delay(1000);
+}
+
+void set_eepromInit(void){
+  Serial.println("EEPROM init");
+  if (EEPROM.read(0) != 23){
+    //EEPROM is epmty
+    //write default values
+    Serial.println("EEPROM first use?");
+    EEPROM.write(0, 23);
+    EEPROM.write(1, SLIDER_SPEED_2);
+    EEPROM.write(2, SLIDER_SPEED_2);
+    EEPROM.write(3, SLIDER_SPEED_2);
+  }
+  Serial.print("EEPROM read...");
+  slider_values.speed_l = EEPROM.read(1);
+  slider_values.speed_r = EEPROM.read(2);
+  slider_values.speed_m = EEPROM.read(3);
+  slider_values.x_l = EEPROM.read(4);
+  slider_values.x_r = EEPROM.read(5);
+  slider_values.ret_l = (uint8_t)EEPROM.read(6);
+  slider_values.ret_r = (uint8_t)EEPROM.read(7);
+  Serial.println("done");
+}
+
+void set_eepromUpdate(s_values lider_values){
+  Serial.print("EEPROM write...");
+  EEPROM.write(1, slider_values.speed_l);
+  EEPROM.write(2, slider_values.speed_r);
+  EEPROM.write(3, slider_values.speed_m);
+  EEPROM.write(4, slider_values.x_l);
+  EEPROM.write(5, slider_values.x_l);
+  EEPROM.write(6, (uint8_t)slider_values.ret_l);
+  EEPROM.write(7, (uint8_t)slider_values.ret_r);
+  Serial.println("done");
 }
