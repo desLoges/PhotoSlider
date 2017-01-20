@@ -1,33 +1,9 @@
 #include "slider.h"
 #include <Fonts/FreeSans9pt7b.h>
 
-// Software SPI (slower updates, more flexible pin options):
-// pin 7 - Serial clock out (SCLK)
-// pin 6 - Serial data out (DIN)
-// pin 5 - Data/Command select (D/C)
-// pin 4 - LCD chip select (CS)
-// pin 3 - LCD reset (RST)
 Adafruit_PCD8544 display = Adafruit_PCD8544(7, 6, 5, 4, 8);
 
-// Hardware SPI (faster, but must use certain hardware pins):
-// SCK is LCD serial clock (SCLK) - this is pin 13 on Arduino Uno
-// MOSI is LCD DIN - this is pin 11 on an Arduino Uno
-// pin 5 - Data/Command select (D/C)
-// pin 4 - LCD chip select (CS)
-// pin 3 - LCD reset (RST)
-// Adafruit_PCD8544 display = Adafruit_PCD8544(5, 4, 3);
-// Note with hardware SPI MISO and SS pins aren't used but will still be read
-// and written to during SPI transfer.  Be careful sharing these pins!
-
-//#include <Rotary.h>
-
-//Rotary r = Rotary(2, 3);
-
-//struct s_values slider_values;
-
-s_values slider_values = {};
-
-
+//s_values slider_values = {};
 
 int8_t menu_position_main = 1;
 int8_t menu_position_submenu1 = 0;
@@ -48,16 +24,13 @@ uint8_t submenu_size_slide = (sizeof(submenu_items_slide)/sizeof(submenu_items_s
 
 uint8_t x = 0;
 
+s_values slider_values;
+
 void setup()   {
 
-  slider_values.ret_l = false;
-  slider_values.ret_r = false;
-  slider_values.speed_l = SLIDER_SPEED_1;
-  slider_values.speed_r = SLIDER_SPEED_1;
-  slider_values.x_l = SLIDER_X_2;
-  slider_values.x_r = SLIDER_X_2;
-
   Serial.begin(9600);
+
+  set_eepromInit();
 
   display.begin();
   // init done
@@ -227,7 +200,10 @@ void loop() {
       if (menu_position_submenu1 == 2) act_menu_layer = mn_main;
       else act_menu_layer = mn_submenu2;
     }
-    else if (act_menu_layer == mn_submenu2) act_menu_layer = mn_submenu1;
+    else if (act_menu_layer == mn_submenu2){
+      act_menu_layer = mn_submenu1;
+      set_eepromUpdate(slider_values);
+    }
   }
 
   enc_CW=false;
