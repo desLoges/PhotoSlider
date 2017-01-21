@@ -1,9 +1,9 @@
 #include "slider.h"
 #include <Fonts/FreeSans9pt7b.h>
+#include "Rotary.h"
 
 Adafruit_PCD8544 display = Adafruit_PCD8544(7, 6, 5, 4, 8);
-
-//s_values slider_values = {};
+Rotary r = Rotary(2, 3);
 
 int8_t menu_position_main = 1;
 int8_t menu_position_submenu1 = 0;
@@ -36,10 +36,16 @@ void setup()   {
   // init done
   pinMode(BUTTON_SUBMIT, INPUT_PULLUP);
   pinMode(BUTTON_HOME, INPUT_PULLUP);
-  pinMode(NAV1, INPUT_PULLUP);
-  pinMode(NAV2, INPUT_PULLUP);
-  attachInterrupt(digitalPinToInterrupt(NAV1), trigger_nav1, FALLING);
-  attachInterrupt(digitalPinToInterrupt(NAV2), trigger_nav2, FALLING);
+  pinMode(MOTOR_STEP,OUTPUT);
+  pinMode(MOTOR_DIRECTION,OUTPUT);
+  //pinMode(NAV1, INPUT_PULLUP);
+  //pinMode(NAV2, INPUT_PULLUP);
+  //attachInterrupt(digitalPinToInterrupt(NAV1), trigger_nav1, FALLING);
+  //attachInterrupt(digitalPinToInterrupt(NAV2), trigger_nav2, FALLING);
+  Serial.begin(9600);
+  PCICR |= (1 << PCIE2);
+  PCMSK2 |= (1 << PCINT18) | (1 << PCINT19);
+  sei();
 
 
   // you can change the contrast around to adapt the display
@@ -120,8 +126,17 @@ void loop() {
           case 0:
             Serial.println(submenu_items_slide[menu_position_submenu1]);
             set_subMenuValuePrint(display, menu_items, menu_position_main, " ");
-            set_slideMenuValuePrint(display, slider_values.speed_r, slider_values.x_r, 24); //create the if
-            delay(5000); //replace this with slide function
+            if( menu_position_main == 0 ){
+              set_slideMenuValuePrint(display, slider_values.speed_r, slider_values.x_r, 24); //create the if
+              go_right(SLIDER_SPEED_1);
+            }else if( menu_position_main == 1 ){
+              set_slideMenuValuePrint(display, slider_values.speed_l, slider_values.x_l, 24); //create the if
+              go_left(SLIDER_SPEED_1);
+            }else if( menu_position_main == 2 ){
+              set_slideMenuValuePrint(display, slider_values.speed_m, 0, 24); //create the if
+              //creat manual step
+            }
+            //delay(5000); //replace this with slide function
             act_menu_layer=mn_main;
             was_irq_enc = true;
           break;
@@ -230,4 +245,23 @@ void trigger_nav2(void){
   was_irq_enc=true;
   enc_CW=true;
   attachInterrupt(digitalPinToInterrupt(NAV2), trigger_nav2, FALLING);
+}
+
+ISR(PCINT2_vect) {
+  unsigned char result = r.process();
+  if (result == DIR_NONE) {
+    // do nothing
+  }
+  else if (result == DIR_CW) {
+    //Serial.println("ClockWise");
+    //Serial.println("\nnav 2");
+    was_irq_enc=true;
+    enc_CW=true;
+  }
+  else if (result == DIR_CCW) {
+    //Serial.println("CounterClockWise");
+    //Serial.println("\nnav 1");
+    was_irq_enc=true;
+    enc_CCW=true;
+  }
 }

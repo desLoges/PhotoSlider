@@ -22,6 +22,11 @@
 #define SLIDER_SPEED_2      2
 #define SLIDER_SPEED_3      3
 #define SLIDER_SPEED_4      4
+#define MOTOR_DIRECTION     11 //pin
+#define MOTOR_STEP          10 //pin
+#define MOTOR_MS1
+#define MOTOR_MS2
+
 
 enum menu_layers {mn_main, mn_submenu1, mn_submenu2};
 extern menu_layers act_menu_layer;

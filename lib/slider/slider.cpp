@@ -157,12 +157,27 @@ bool go_home(void){
 
 void go_right(uint8_t speed){
   Serial.println(">>");
-  delay(1000);
+  digitalWrite(MOTOR_DIRECTION,HIGH); // Enables the motor to move in a particular direction
+  // Makes 200 pulses for making one full cycle rotation
+  for(int x = 0; x < 200; x++) {
+    digitalWrite(MOTOR_STEP,HIGH);
+    delayMicroseconds(1000);
+    digitalWrite(MOTOR_STEP,LOW);
+    delayMicroseconds(1000);
+  }
+  //delay(1000);
 }
 
 void go_left(uint8_t speed){
   Serial.println("<<");
-  delay(1000);
+  digitalWrite(MOTOR_DIRECTION,LOW); //Changes the rotations direction
+  // Makes 400 pulses for making two full cycle rotation
+  for(int x = 0; x < 400; x++) {
+    digitalWrite(MOTOR_STEP,HIGH);
+    delayMicroseconds(1000);
+    digitalWrite(MOTOR_STEP,LOW);
+    delayMicroseconds(1000);
+  }
 }
 
 void set_eepromInit(void){
