@@ -120,6 +120,7 @@ void loop() {
           case 0:
             Serial.println(submenu_items_slide[menu_position_submenu1]);
             set_subMenuValuePrint(display, menu_items, menu_position_main, " ");
+            set_slideMenuValuePrint(display, slider_values.speed_r, slider_values.x_r, 24); //create the if
             delay(5000); //replace this with slide function
             act_menu_layer=mn_main;
             was_irq_enc = true;
@@ -130,15 +131,15 @@ void loop() {
             if( menu_position_main == 0 ){
               if(enc_CW) slider_values.speed_r++;
               else if(enc_CCW) slider_values.speed_r--;
-              set_subMenuValuePrint(display, submenu_items_slide, menu_position_submenu1, String(slider_values.speed_r));
+              set_subMenuValuePrint(display, submenu_items_slide, menu_position_submenu1, "  "+String(slider_values.speed_r));
             }else if( menu_position_main == 1 ){
               if(enc_CW) slider_values.speed_l++;
               else if(enc_CCW) slider_values.speed_l--;
-              set_subMenuValuePrint(display, submenu_items_slide, menu_position_submenu1, String(slider_values.speed_l));
+              set_subMenuValuePrint(display, submenu_items_slide, menu_position_submenu1, "  "+String(slider_values.speed_l));
             }else if( menu_position_main == 2 ){
               if(enc_CW) slider_values.speed_m++;
               else if(enc_CCW) slider_values.speed_m--;
-              set_subMenuValuePrint(display, submenu_items_slide, menu_position_submenu1, String(slider_values.speed_m));
+              set_subMenuValuePrint(display, submenu_items_slide, menu_position_submenu1, "  "+String(slider_values.speed_m));
             }
           break;
           //exit skipped
@@ -148,11 +149,11 @@ void loop() {
             if( menu_position_main == 0 ){
               if(enc_CW) slider_values.x_r++;
               else if(enc_CCW) slider_values.x_r--;
-              set_subMenuValuePrint(display, submenu_items_slide, menu_position_submenu1, String(slider_values.x_r));
+              set_subMenuValuePrint(display, submenu_items_slide, menu_position_submenu1, "  "+String(slider_values.x_r)+"%");
             }else if( menu_position_main == 1 ){
               if(enc_CW) slider_values.x_l++;
               else if(enc_CCW) slider_values.x_l--;
-              set_subMenuValuePrint(display, submenu_items_slide, menu_position_submenu1, String(slider_values.x_l));
+              set_subMenuValuePrint(display, submenu_items_slide, menu_position_submenu1, "  "+String(slider_values.x_l)+"%");
             }
           break;
           //return
@@ -162,14 +163,14 @@ void loop() {
               if(enc_CW) slider_values.ret_r = !slider_values.ret_r;
               else if(enc_CCW) slider_values.ret_r = !slider_values.ret_r;
 
-              if (slider_values.ret_r) set_subMenuValuePrint(display, submenu_items_slide, menu_position_submenu1, "YES");
-              else set_subMenuValuePrint(display, submenu_items_slide, menu_position_submenu1, "NO");
+              if (slider_values.ret_r) set_subMenuValuePrint(display, submenu_items_slide, menu_position_submenu1, "  YES");
+              else set_subMenuValuePrint(display, submenu_items_slide, menu_position_submenu1, "   NO");
             }else if( menu_position_main == 1 ){
               if(enc_CW) slider_values.ret_l = !slider_values.ret_l;
               else if(enc_CCW) slider_values.ret_l = !slider_values.ret_l;
 
-              if (slider_values.ret_l) set_subMenuValuePrint(display, submenu_items_slide, menu_position_submenu1, "YES");
-              else set_subMenuValuePrint(display, submenu_items_slide, menu_position_submenu1, "NO");
+              if (slider_values.ret_l) set_subMenuValuePrint(display, submenu_items_slide, menu_position_submenu1, "  YES");
+              else set_subMenuValuePrint(display, submenu_items_slide, menu_position_submenu1, "   NO");
             }
           break;
           default:

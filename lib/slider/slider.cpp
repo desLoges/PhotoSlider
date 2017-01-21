@@ -95,31 +95,18 @@ int8_t set_menuItemPrint(Adafruit_PCD8544 disp, String array[], String header, i
   return pos;
 }
 
-void set_slideMenuValuePrint(Adafruit_PCD8544 disp, String array[], int8_t pos){
+void set_slideMenuValuePrint(Adafruit_PCD8544 disp, int8_t speed, int8_t x, uint8_t status){
 
-  disp.clearDisplay();
+  //disp.clearDisplay();
 
-  //header
-  disp.fillRect(0,0,70,8,BLACK);
   disp.setTextSize(1);
-  disp.setCursor(16,0);
-  disp.setTextColor(WHITE, BLACK);
-  disp.println(array[pos]);
-  //disp.drawFastHLine(0,8,83,BLACK);
-
-  //battery sign
-  disp.fillRect(72,1,6,5,BLACK);
-  disp.drawRect(77,1,6,5,BLACK);
-  disp.drawFastVLine(83,2,3,BLACK);
-
-  //disp.fillRect(0,14,83,18,BLACK);
-  disp.setTextSize(2);
-  disp.setCursor(3,18);
-  disp.setTextColor(BLACK);
-  //disp.println("<    >");
-  //disp.setCursor(30,20);
-  //disp.println("%");
-
+  disp.setCursor(1,38);
+  disp.setTextColor(WHITE);
+  disp.print("Speed: ");
+  disp.print(speed);
+  disp.print("  X: ");
+  disp.print(x);
+  disp.println("%");
 
   disp.display();
 }

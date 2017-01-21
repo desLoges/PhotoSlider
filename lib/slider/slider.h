@@ -40,7 +40,7 @@ struct s_values{
 
 int8_t set_menuItemPrint(Adafruit_PCD8544 disp, String array[], String header, int8_t pos, uint8_t a_size);
 void set_subMenuValuePrint(Adafruit_PCD8544 disp, String array[], int8_t pos, String value);
-void set_slideMenuValuePrint(Adafruit_PCD8544 disp, String array[], int8_t pos);
+void set_slideMenuValuePrint(Adafruit_PCD8544 disp, int8_t speed, int8_t x, uint8_t status);
 void set_eepromInit(void);
 void set_eepromUpdate(s_values lider_values);
 bool go_home(void);
