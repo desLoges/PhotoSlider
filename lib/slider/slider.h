@@ -6,7 +6,7 @@
 
 #define NAV1                2
 #define NAV2                3
-#define BUTTON_SUBMIT       9
+#define BUTTON_SUBMIT       A1
 #define BUTTON_HOME         A0
 #define SLIDER_X_10         1
 #define SLIDER_X_20         2
@@ -22,11 +22,22 @@
 #define SLIDER_SPEED_2      2
 #define SLIDER_SPEED_3      3
 #define SLIDER_SPEED_4      4
-#define MOTOR_DIRECTION     11 //pin
+#define MOTOR_DIRECTION     12 //pin
 #define MOTOR_STEP          10 //pin
-#define MOTOR_MS1
-#define MOTOR_MS2
+#define MOTOR_ENABLE        A2
+#define MOTOR_MS1           A3
+#define MOTOR_MS2           A4
+#define LCD_BACKLIGHT       11
+#define LCD_CONTRAST        47
 
+#define LCD_BACKLIGHT_OFF   digitalWrite(LCD_BACKLIGHT, LOW)
+#define LCD_BACKLIGHT_ON    digitalWrite(LCD_BACKLIGHT, HIGH)
+#define STEPPER_ENABLE      digitalWrite(MOTOR_ENABLE, LOW)
+#define STEPPER_DISABLE     digitalWrite(MOTOR_ENABLE, HIGH)
+#define STEPPER_MS1_OFF     digitalWrite(MOTOR_MS1, LOW)
+#define STEPPER_MS1_ON      digitalWrite(MOTOR_MS1, HIGH)
+#define STEPPER_MS2_OFF     digitalWrite(MOTOR_MS2, LOW)
+#define STEPPER_MS2_ON      digitalWrite(MOTOR_MS2, HIGH)
 
 enum menu_layers {mn_main, mn_submenu1, mn_submenu2};
 extern menu_layers act_menu_layer;
@@ -51,5 +62,3 @@ void set_eepromUpdate(s_values lider_values);
 bool go_home(void);
 void go_right(uint8_t speed);
 void go_left(uint8_t speed);
-void trigger_nav1(void);
-void trigger_nav2(void);

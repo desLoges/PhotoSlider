@@ -36,12 +36,17 @@ void setup()   {
   // init done
   pinMode(BUTTON_SUBMIT, INPUT_PULLUP);
   pinMode(BUTTON_HOME, INPUT_PULLUP);
+  pinMode(LCD_BACKLIGHT, OUTPUT);
   pinMode(MOTOR_STEP,OUTPUT);
   pinMode(MOTOR_DIRECTION,OUTPUT);
-  //pinMode(NAV1, INPUT_PULLUP);
-  //pinMode(NAV2, INPUT_PULLUP);
-  //attachInterrupt(digitalPinToInterrupt(NAV1), trigger_nav1, FALLING);
-  //attachInterrupt(digitalPinToInterrupt(NAV2), trigger_nav2, FALLING);
+  pinMode(MOTOR_MS1,OUTPUT);
+  pinMode(MOTOR_MS2,OUTPUT);
+  pinMode(MOTOR_ENABLE,OUTPUT);
+
+  STEPPER_ENABLE;
+  STEPPER_MS2_ON;
+  LCD_BACKLIGHT_ON;
+
   Serial.begin(9600);
   PCICR |= (1 << PCIE2);
   PCMSK2 |= (1 << PCINT18) | (1 << PCINT19);
@@ -50,7 +55,7 @@ void setup()   {
 
   // you can change the contrast around to adapt the display
   // for the best viewing!
-  display.setContrast(40);
+  display.setContrast(LCD_CONTRAST);
   display.clearDisplay();
 
 
@@ -227,24 +232,6 @@ void loop() {
 
   delay(2);
 
-}
-
-void trigger_nav1(void){
-  detachInterrupt(digitalPinToInterrupt(NAV1));
-  delay(500);
-  Serial.println("\nnav 1");
-  was_irq_enc=true;
-  enc_CCW=true;
-  attachInterrupt(digitalPinToInterrupt(NAV1), trigger_nav1, FALLING);
-}
-
-void trigger_nav2(void){
-  detachInterrupt(digitalPinToInterrupt(NAV2));
-  delay(500);
-  Serial.println("\nnav 2");
-  was_irq_enc=true;
-  enc_CW=true;
-  attachInterrupt(digitalPinToInterrupt(NAV2), trigger_nav2, FALLING);
 }
 
 ISR(PCINT2_vect) {
