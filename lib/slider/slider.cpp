@@ -95,16 +95,16 @@ int8_t set_menuItemPrint(Adafruit_PCD8544 disp, String array[], String header, i
   return pos;
 }
 
-void set_slideMenuValuePrint(Adafruit_PCD8544 disp, int8_t speed, int8_t x, uint8_t status){
+void set_slideMenuValuePrint(Adafruit_PCD8544 disp, uint8_t speed, uint8_t x, uint8_t status){
 
   //disp.clearDisplay();
 
   disp.setTextSize(1);
-  disp.setCursor(1,38);
-  disp.setTextColor(WHITE);
-  disp.print("Speed: ");
+  disp.setCursor(4,38);
+  disp.setTextColor(BLACK);
+  disp.print("Spd ");
   disp.print(speed);
-  disp.print("  X: ");
+  disp.print("  X ");
   disp.print(x);
   disp.println("%");
 
@@ -144,40 +144,78 @@ void set_subMenuValuePrint(Adafruit_PCD8544 disp, String array[], int8_t pos, St
 //Go home
 bool go_home(void){
   bool ret = false;
-
+  STEPPER_ENABLE;
+  //STEPPER_MS1_ON;
+  STEPPER_MS1_OFF;
+  STEPPER_MS2_ON;
   while(digitalRead(BUTTON_HOME)){
-    go_right(SLIDER_SPEED_1);
+    go_left(SLIDER_SPEED_GOHOME);
   }
 
-  //go_left(SLIDER_SPEED_1);
+  delay(200);
 
+  for(uint32_t x = 0; x < 50; x++) {
+    go_right(SLIDER_SPEED_GOHOME);
+  }
+
+  STEPPER_DISABLE;
+  STEPPER_MS1_OFF;
+  STEPPER_MS2_OFF;
   ret = true;
   return ret;
 }
 
 void go_right(uint8_t speed){
-  Serial.println(">>");
-  digitalWrite(MOTOR_DIRECTION,HIGH); // Enables the motor to move in a particular direction
-  // Makes 200 pulses for making one full cycle rotation
-  for(int x = 0; x < 200; x++) {
-    digitalWrite(MOTOR_STEP,HIGH);
-    delayMicroseconds(1000);
-    digitalWrite(MOTOR_STEP,LOW);
-    delayMicroseconds(1000);
-  }
-  //delay(1000);
+  uint8_t speed_act = (MAX_SPEED+1)-speed;
+
+  Serial.print(">> ");
+  Serial.println(speed_act);
+  digitalWrite(MOTOR_DIRECTION,LOW); // Enables the motor to move in a particular direction
+  digitalWrite(MOTOR_STEP,HIGH);
+  delayMicroseconds(speed_act * 50);
+  digitalWrite(MOTOR_STEP,LOW);
+  delayMicroseconds(speed_act * 50);
 }
 
 void go_left(uint8_t speed){
-  Serial.println("<<");
-  digitalWrite(MOTOR_DIRECTION,LOW); //Changes the rotations direction
-  // Makes 400 pulses for making two full cycle rotation
-  for(int x = 0; x < 400; x++) {
-    digitalWrite(MOTOR_STEP,HIGH);
-    delayMicroseconds(1000);
-    digitalWrite(MOTOR_STEP,LOW);
-    delayMicroseconds(1000);
+  uint8_t speed_act = (MAX_SPEED+1)-speed;
+
+  Serial.print("<< ");
+  Serial.println(speed_act);
+  digitalWrite(MOTOR_DIRECTION,HIGH); //Changes the rotations direction
+  digitalWrite(MOTOR_STEP,HIGH);
+  delayMicroseconds(speed_act * 50);
+  digitalWrite(MOTOR_STEP,LOW);
+  delayMicroseconds(speed_act * 50);
+}
+
+void slide_right(uint8_t speed, uint8_t set_x){
+  uint32_t target_x = speed * set_x * 100;
+  STEPPER_ENABLE;
+  STEPPER_MS1_ON;
+  //STEPPER_MS2_ON;
+  for(uint32_t x = 0; x < target_x; x++) {
+    if (!digitalRead(BUTTON_SUBMIT)) break;
+    go_right(speed);
   }
+  STEPPER_DISABLE;
+  STEPPER_MS1_OFF;
+  STEPPER_MS2_OFF;
+}
+
+void slide_left(uint8_t speed, uint8_t set_x){
+  uint32_t target_x = speed * set_x * 100;
+  STEPPER_ENABLE;
+  STEPPER_MS1_ON;
+  //STEPPER_MS2_ON;
+  for(uint32_t x = 0; x < target_x; x++) {
+    if (!digitalRead(BUTTON_HOME)) break;
+    if (!digitalRead(BUTTON_SUBMIT)) break;
+    go_left(speed);
+  }
+  STEPPER_DISABLE;
+  STEPPER_MS1_OFF;
+  STEPPER_MS2_OFF;
 }
 
 void set_eepromInit(void){
@@ -187,9 +225,9 @@ void set_eepromInit(void){
     //write default values
     Serial.println("EEPROM first use?");
     EEPROM.write(0, 23);
-    EEPROM.write(1, SLIDER_SPEED_2);
-    EEPROM.write(2, SLIDER_SPEED_2);
-    EEPROM.write(3, SLIDER_SPEED_2);
+    EEPROM.write(1, SLIDER_SPEED_DEFAULT);
+    EEPROM.write(2, SLIDER_SPEED_DEFAULT);
+    EEPROM.write(3, SLIDER_SPEED_DEFAULT);
   }
   Serial.print("EEPROM read...");
   slider_values.speed_l = EEPROM.read(1);

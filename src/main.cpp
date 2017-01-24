@@ -14,7 +14,7 @@ bool was_irq_enc = false;
 bool enc_CW = false;
 bool enc_CCW = false;
 String menu_items [] =  {">>>>>>", "<<<<<<", "Manual", "GoHome" };
-String submenu_items_slide [] = {" START", " Speed", " Exit", "Set X", "Return"};
+String submenu_items_slide [] = {" START", " Speed", " Exit", " Set X", "Return"};
 
 menu_layers act_menu_layer = mn_main;
 
@@ -43,8 +43,6 @@ void setup()   {
   pinMode(MOTOR_MS2,OUTPUT);
   pinMode(MOTOR_ENABLE,OUTPUT);
 
-  STEPPER_ENABLE;
-  STEPPER_MS2_ON;
   LCD_BACKLIGHT_ON;
 
   Serial.begin(9600);
@@ -57,7 +55,6 @@ void setup()   {
   // for the best viewing!
   display.setContrast(LCD_CONTRAST);
   display.clearDisplay();
-
 
   Serial.println("Init done");
   delay(2000);
@@ -132,16 +129,15 @@ void loop() {
             Serial.println(submenu_items_slide[menu_position_submenu1]);
             set_subMenuValuePrint(display, menu_items, menu_position_main, " ");
             if( menu_position_main == 0 ){
-              set_slideMenuValuePrint(display, slider_values.speed_r, slider_values.x_r, 24); //create the if
-              go_right(SLIDER_SPEED_1);
+              set_slideMenuValuePrint(display, slider_values.speed_r, slider_values.x_r, 24);
+              slide_right(slider_values.speed_r, slider_values.x_r);
             }else if( menu_position_main == 1 ){
-              set_slideMenuValuePrint(display, slider_values.speed_l, slider_values.x_l, 24); //create the if
-              go_left(SLIDER_SPEED_1);
+              set_slideMenuValuePrint(display, slider_values.speed_l, slider_values.x_l, 24);
+              slide_left(slider_values.speed_l, slider_values.x_l);
             }else if( menu_position_main == 2 ){
-              set_slideMenuValuePrint(display, slider_values.speed_m, 0, 24); //create the if
+              set_slideMenuValuePrint(display, slider_values.speed_m, 0, 24);
               //creat manual step
             }
-            //delay(5000); //replace this with slide function
             act_menu_layer=mn_main;
             was_irq_enc = true;
           break;
@@ -149,16 +145,16 @@ void loop() {
           case 1:
             Serial.println(submenu_items_slide[menu_position_submenu1]);
             if( menu_position_main == 0 ){
-              if(enc_CW) slider_values.speed_r++;
-              else if(enc_CCW) slider_values.speed_r--;
+              if( enc_CW && (slider_values.speed_r < MAX_SPEED) ) slider_values.speed_r++;
+              else if( enc_CCW && (slider_values.speed_r > MIN_SPEED) ) slider_values.speed_r--;
               set_subMenuValuePrint(display, submenu_items_slide, menu_position_submenu1, "  "+String(slider_values.speed_r));
             }else if( menu_position_main == 1 ){
-              if(enc_CW) slider_values.speed_l++;
-              else if(enc_CCW) slider_values.speed_l--;
+              if( enc_CW && (slider_values.speed_l < MAX_SPEED) ) slider_values.speed_l++;
+              else if( enc_CCW && (slider_values.speed_l > MIN_SPEED) ) slider_values.speed_l--;
               set_subMenuValuePrint(display, submenu_items_slide, menu_position_submenu1, "  "+String(slider_values.speed_l));
             }else if( menu_position_main == 2 ){
-              if(enc_CW) slider_values.speed_m++;
-              else if(enc_CCW) slider_values.speed_m--;
+              if( enc_CW && (slider_values.speed_m < MAX_SPEED) ) slider_values.speed_m++;
+              else if( enc_CCW && (slider_values.speed_m > MIN_SPEED) ) slider_values.speed_m--;
               set_subMenuValuePrint(display, submenu_items_slide, menu_position_submenu1, "  "+String(slider_values.speed_m));
             }
           break;
@@ -167,12 +163,12 @@ void loop() {
           case 3:
             Serial.println(submenu_items_slide[menu_position_submenu1]);
             if( menu_position_main == 0 ){
-              if(enc_CW) slider_values.x_r++;
-              else if(enc_CCW) slider_values.x_r--;
+              if( enc_CW && (slider_values.x_r < MAX_X) ) slider_values.x_r+=X_RESOLUTION;
+              else if( enc_CCW && (slider_values.x_r > MIN_X) ) slider_values.x_r-=X_RESOLUTION;
               set_subMenuValuePrint(display, submenu_items_slide, menu_position_submenu1, "  "+String(slider_values.x_r)+"%");
             }else if( menu_position_main == 1 ){
-              if(enc_CW) slider_values.x_l++;
-              else if(enc_CCW) slider_values.x_l--;
+              if( enc_CW && (slider_values.x_l < MAX_X) ) slider_values.x_l+=X_RESOLUTION;
+              else if( enc_CCW && (slider_values.x_l > MIN_X) ) slider_values.x_l-=X_RESOLUTION;
               set_subMenuValuePrint(display, submenu_items_slide, menu_position_submenu1, "  "+String(slider_values.x_l)+"%");
             }
           break;
@@ -184,13 +180,13 @@ void loop() {
               else if(enc_CCW) slider_values.ret_r = !slider_values.ret_r;
 
               if (slider_values.ret_r) set_subMenuValuePrint(display, submenu_items_slide, menu_position_submenu1, "  YES");
-              else set_subMenuValuePrint(display, submenu_items_slide, menu_position_submenu1, "   NO");
+              else set_subMenuValuePrint(display, submenu_items_slide, menu_position_submenu1, "  NO");
             }else if( menu_position_main == 1 ){
               if(enc_CW) slider_values.ret_l = !slider_values.ret_l;
               else if(enc_CCW) slider_values.ret_l = !slider_values.ret_l;
 
               if (slider_values.ret_l) set_subMenuValuePrint(display, submenu_items_slide, menu_position_submenu1, "  YES");
-              else set_subMenuValuePrint(display, submenu_items_slide, menu_position_submenu1, "   NO");
+              else set_subMenuValuePrint(display, submenu_items_slide, menu_position_submenu1, "  NO");
             }
           break;
           default:
@@ -240,14 +236,10 @@ ISR(PCINT2_vect) {
     // do nothing
   }
   else if (result == DIR_CW) {
-    //Serial.println("ClockWise");
-    //Serial.println("\nnav 2");
     was_irq_enc=true;
     enc_CW=true;
   }
   else if (result == DIR_CCW) {
-    //Serial.println("CounterClockWise");
-    //Serial.println("\nnav 1");
     was_irq_enc=true;
     enc_CCW=true;
   }
