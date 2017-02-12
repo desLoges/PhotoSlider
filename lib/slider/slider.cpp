@@ -1,6 +1,7 @@
 #include "slider.h"
 
 extern s_values slider_values;
+uint32_t slide_to_x_array [] = {0, SLIDE_MAX_SPD_10, SLIDE_MAX_SPD_20, SLIDE_MAX_SPD_30, SLIDE_MAX_SPD_40, SLIDE_MAX_SPD_50, SLIDE_MAX_SPD_60, SLIDE_MAX_SPD_70, SLIDE_MAX_SPD_80, SLIDE_MAX_SPD_90, SLIDE_MAX_SPD_100};
 
 void testfillrect(Adafruit_PCD8544 disp) {
   uint8_t color = 1;
@@ -10,6 +11,12 @@ void testfillrect(Adafruit_PCD8544 disp) {
     disp.display();
     color++;
   }
+}
+
+viod draw_battery_sign(uint8_t value){
+  disp.fillRect(72,1,6,(1+value),BLACK);
+  disp.drawRect((73+value),1,6,(10-value),BLACK);
+  disp.drawFastVLine(83,2,3,BLACK);
 }
 
 int8_t set_menuItemPrint(Adafruit_PCD8544 disp, String array[], String header, int8_t pos, uint8_t a_size){
@@ -53,14 +60,11 @@ int8_t set_menuItemPrint(Adafruit_PCD8544 disp, String array[], String header, i
 
   disp.clearDisplay();
 
-  //
+  //header line
   disp.drawFastHLine(3,3,66,BLACK);
 
-
   //battery sign
-  disp.fillRect(72,1,6,5,BLACK);
-  disp.drawRect(77,1,6,5,BLACK);
-  disp.drawFastVLine(83,2,3,BLACK);
+  draw_battery_sign(1);
 
   //visual signing
   disp.setTextSize(1);
@@ -71,7 +75,6 @@ int8_t set_menuItemPrint(Adafruit_PCD8544 disp, String array[], String header, i
   disp.setCursor(3,38);
   disp.setTextColor(BLACK);
   disp.println("\\           /");
-
 
   // text display tests
   disp.setTextSize(1);
@@ -98,7 +101,6 @@ int8_t set_menuItemPrint(Adafruit_PCD8544 disp, String array[], String header, i
 void set_slideMenuValuePrint(Adafruit_PCD8544 disp, uint8_t speed, uint8_t x, uint8_t status){
 
   //disp.clearDisplay();
-
   disp.setTextSize(1);
   disp.setCursor(4,38);
   disp.setTextColor(BLACK);
@@ -124,9 +126,7 @@ void set_subMenuValuePrint(Adafruit_PCD8544 disp, String array[], int8_t pos, St
   //disp.drawFastHLine(0,8,83,BLACK);
 
   //battery sign
-  disp.fillRect(72,1,6,5,BLACK);
-  disp.drawRect(77,1,6,5,BLACK);
-  disp.drawFastVLine(83,2,3,BLACK);
+  draw_battery_sign(1);
 
   //disp.fillRect(0,14,83,18,BLACK);
   disp.setTextSize(2);
@@ -190,7 +190,7 @@ void go_left(uint8_t speed){
 }
 
 void slide_right(uint8_t speed, uint8_t set_x){
-  uint32_t target_x = speed * set_x * 100;
+  uint32_t target_x = slide_to_x_array[speed]/set_x;
   STEPPER_ENABLE;
   STEPPER_MS1_ON;
   //STEPPER_MS2_ON;
@@ -204,7 +204,7 @@ void slide_right(uint8_t speed, uint8_t set_x){
 }
 
 void slide_left(uint8_t speed, uint8_t set_x){
-  uint32_t target_x = speed * set_x * 100;
+  uint32_t target_x = slide_to_x_array[speed]/set_x;
   STEPPER_ENABLE;
   STEPPER_MS1_ON;
   //STEPPER_MS2_ON;

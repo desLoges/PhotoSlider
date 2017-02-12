@@ -14,18 +14,31 @@
 #define MOTOR_MS1           A3
 #define MOTOR_MS2           A4
 #define LCD_BACKLIGHT       11
-#define LCD_CONTRAST        52
+#define LCD_CONTRAST        45
 
-#define SLIDER_X_10         1
-#define SLIDER_X_20         2
-#define SLIDER_X_30         3
-#define SLIDER_X_40         4
-#define SLIDER_X_50         5
-#define SLIDER_X_60         6
-#define SLIDER_X_70         7
-#define SLIDER_X_80         8
-#define SLIDER_X_90         9
-#define SLIDER_X_100        10
+// #define SLIDER_X_10         1
+// #define SLIDER_X_20         2
+// #define SLIDER_X_30         3
+// #define SLIDER_X_40         4
+// #define SLIDER_X_50         5
+// #define SLIDER_X_60         6
+// #define SLIDER_X_70         7
+// #define SLIDER_X_80         8
+// #define SLIDER_X_90         9
+// #define SLIDER_X_100        10
+
+#define SLIDE_MAX_SPD_10    1000
+#define SLIDE_MAX_SPD_20    900
+#define SLIDE_MAX_SPD_30    800
+#define SLIDE_MAX_SPD_40    700
+#define SLIDE_MAX_SPD_50    600
+#define SLIDE_MAX_SPD_60    500
+#define SLIDE_MAX_SPD_70    400
+#define SLIDE_MAX_SPD_80    300
+#define SLIDE_MAX_SPD_90    200
+#define SLIDE_MAX_SPD_100    100
+
+
 #define MIN_SPEED           1
 #define MAX_SPEED           10
 #define SLIDER_SPEED_DEFAULT 3
